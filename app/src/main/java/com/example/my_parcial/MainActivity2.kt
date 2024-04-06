@@ -13,14 +13,11 @@ class MainActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
-        mensaje = findViewById(R.id.textViewMensaje) // Asignar el TextView
-
+        mensaje = findViewById(R.id.textViewMensaje)
 
         val mensajeRecibido = intent.getStringExtra("mensaje")
 
-
         mensajeRecibido?.let {
-
             mensaje.text = it
         }
     }
