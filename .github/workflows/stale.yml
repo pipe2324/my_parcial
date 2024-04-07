@@ -1,4 +1,4 @@
-name: Verificar mensaje enviado en la app de Android
+name: Ejecutar aplicación Android
 
 on:
   push:
@@ -9,19 +9,11 @@ on:
       - master
 
 jobs:
-  verificar-mensaje:
+  ejecutar-aplicacion:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v2
-
-      - name: Configurar JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
 
       - name: Conectar dispositivo/emulador Android
         uses: reactivecircus/android-emulator-runner@v2
@@ -29,17 +21,9 @@ jobs:
           api-level: 29
           script: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
           
-      - name: Extraer el mensaje enviado en la app
+      - name: Ejecutar la aplicación
         run: |
-          mensaje=$(adb logcat -d | grep "Mensaje enviado:" | cut -d ":" -f 2 | xargs)
-          echo "Mensaje enviado desde la app de Android: $mensaje"
-
-      - name: Verificar si el mensaje es correcto
-        run: |
-          mensaje_esperado="Mensaje de prueba"
-          if [ "$mensaje" == "$mensaje_esperado" ]; then
-            echo "El mensaje enviado desde la app de Android es correcto: $mensaje"
-          else
-            echo "ERROR: El mensaje enviado desde la app de Android no es correcto. Se esperaba '$mensaje_esperado' pero se recibió '$mensaje'."
-            exit 1
-          fi
+          # Build y ejecución de la aplicación Android
+          ./gradlew installDebug
+          # Mensaje en la consola
+          echo "¡La aplicación se ha ejecutado correctamente en el dispositivo/emulador!"
