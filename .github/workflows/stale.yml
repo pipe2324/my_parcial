@@ -23,7 +23,7 @@ jobs:
       - name: Ejecutar pruebas de la app de Android
         run: |
           # Compilar y ejecutar las pruebas de la app de Android
-          ./gradlew test
+          sudo ./gradlew test
 
       - name: Extraer el mensaje enviado desde la actividad secundaria
         run: |
