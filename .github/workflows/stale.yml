@@ -1,0 +1,43 @@
+name: Verificar mensaje enviado en la app de Android
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verificar-mensaje:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v2
+
+      - name: Configurar JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Ejecutar pruebas de la app de Android
+        run: |
+          # Compilar y ejecutar las pruebas de la app de Android
+          ./gradlew test
+
+      - name: Extraer el mensaje enviado desde la actividad secundaria
+        run: |
+          # Extraer el mensaje enviado desde la actividad secundaria (MainActivity2)
+          mensaje=$(grep -oP '(?<=intent.getStringExtra\("mensaje"\)).*' app/src/main/java/com/example/my_parcial/MainActivity2.kt | cut -d "\"" -f 2)
+          echo "Mensaje enviado desde la actividad secundaria: $mensaje"
+
+      - name: Verificar si el mensaje es correcto
+        run: |
+          # Verificar si el mensaje coincide con el esperado
+          mensaje_esperado="Mensaje de prueba"
+          if [ "$mensaje" == "$mensaje_esperado" ]; then
+            echo "El mensaje enviado desde la actividad secundaria es correcto: $mensaje"
+          else
+            echo "ERROR: El mensaje enviado desde la actividad secundaria no es correcto. Se esperaba '$mensaje_esperado' pero se recibió '$mensaje'."
+            exit 1
+          fi
