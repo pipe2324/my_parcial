@@ -1,12 +1,15 @@
-name: Automatizar envío de mensaje entre pantallas
+name: Verificar mensaje enviado en la app de Android
 
 on:
   push:
     branches:
-      - master
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  testar-envio-mensaje:
+  verificar-mensaje:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repositorio
@@ -16,50 +19,26 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-
-      - name: Descargar dependencias de UI Automator
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Ejecutar pruebas de la app de Android
         run: |
-          sudo apt update
-          sudo apt install -y android-tools-adb
+          # Compilar y ejecutar las pruebas de la app de Android
+          ./gradlew test
 
-      - name: Simular interacción entre pantallas
+      - name: Extraer el mensaje enviado en la app
         run: |
-          # Script de UI Automator para simular la interacción
-          # Reemplazar "paquete.de.tu.app" con el nombre del paquete de tu aplicación
-          # Reemplazar "MainActivity" con el nombre de la clase de la actividad principal
-          # Reemplazar "Mensaje de prueba" con el mensaje que se desea enviar
+          # Extraer el mensaje enviado desde el logcat de la app de Android
+          mensaje=$(adb logcat -d | grep "Mensaje enviado:" | cut -d ":" -f 2 | xargs)
+          echo "Mensaje enviado desde la app de Android: $mensaje"
 
-          uiautomator2 run \
-            -c "new UiAutomator2(new UiDevice()).newAppStartBuilder(\
-            "paquete.de.tu.app").build().startActivity().waitForIdle();\
-            new UiObject(new UiSelector().resourceId(\
-            "paquete.de.tu.app:id/editTextMensaje")).setText(\
-            "Mensaje de prueba");\
-            new UiObject(new UiSelector().resourceId(\
-            "paquete.de.tu.app:id/buttonEnviar")).click();\
-            new UiObject(new UiSelector().resourceId(\
-            "paquete.de.tu.app:id/textViewMensajeRecibido")).getText();"
-
-      - name: Validar recepción del mensaje
+      - name: Verificar si el mensaje es correcto
         run: |
-          # Verificar si el mensaje se recibió correctamente
-          # Reemplazar "Mensaje de prueba" con el mensaje que se desea enviar
-
-          if [[ "$(cat output.txt)" == "Mensaje de prueba" ]]; then
-            echo "**Éxito:** El mensaje se recibió correctamente."
+          # Verificar si el mensaje coincide con el esperado
+          mensaje_esperado="Mensaje de prueba"
+          if [ "$mensaje" == "$mensaje_esperado" ]; then
+            echo "El mensaje enviado desde la app de Android es correcto: $mensaje"
           else
-            echo "**ERROR:** El mensaje no se recibió correctamente."
+            echo "ERROR: El mensaje enviado desde la app de Android no es correcto. Se esperaba '$mensaje_esperado' pero se recibió '$mensaje'."
             exit 1
           fi
-
-  validar-mensaje-recibido:
-    runs-on: ubuntu-latest
-    needs: testar-envio-mensaje
-    steps:
-      - name: Generar informe de éxito
-        if: success()
-        run: echo "**Informe de éxito:** El mensaje se recibió correctamente." > informe.txt
-
-      - name: Generar informe de error
-        if: failure()
-        run: echo "**Informe de error:** El mensaje no se recibió correctamente." > informe.txt
