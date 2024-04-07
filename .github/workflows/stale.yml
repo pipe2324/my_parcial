@@ -37,5 +37,3 @@ jobs:
           # Leer el mensaje recibido desde la pantalla 2 (reemplaza con tu implementación)
           mensaje_recibido=$(adb logcat -d | grep "Mensaje recibido:")
           echo "Mensaje recibido en la pantalla 2: $mensaje_recibido"
-
-        run: echo "Mensaje recibido en la pantalla 2"
