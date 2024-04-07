@@ -29,15 +29,17 @@ jobs:
         run: |
           # Extraer el mensaje enviado desde la actividad secundaria (MainActivity2)
           mensaje=$(grep -oP '(?<=intent.getStringExtra\("mensaje"\)).*' app/src/main/java/com/example/my_parcial/MainActivity2.kt | cut -d "\"" -f 2)
+
           echo "Mensaje enviado desde la actividad secundaria: $mensaje"
 
       - name: Verificar si el mensaje es correcto
         run: |
           # Verificar si el mensaje coincide con el esperado
           mensaje_esperado="Mensaje de prueba"
+
           if [ "$mensaje" == "$mensaje_esperado" ]; then
             echo "El mensaje enviado desde la actividad secundaria es correcto: $mensaje"
           else
-            echo "ERROR: El mensaje enviado desde la actividad secundaria no es correcto. Se esperaba '$mensaje_esperado' pero se recibió '$mensaje'."
+            echo "**ERROR:** El mensaje enviado desde la actividad secundaria no es correcto."
+            echo "Se esperaba '$mensaje_esperado' pero se recibió '$mensaje'."
             exit 1
-          fi
