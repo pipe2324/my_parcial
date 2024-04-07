@@ -19,22 +19,23 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Ejecutar pruebas de la app de Android
-        run: |
-          # Compilar y ejecutar las pruebas de la app de Android
-          ./gradlew test
 
+      - name: Conectar dispositivo/emulador Android
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
+          
       - name: Extraer el mensaje enviado en la app
         run: |
-          # Extraer el mensaje enviado desde el logcat de la app de Android
           mensaje=$(adb logcat -d | grep "Mensaje enviado:" | cut -d ":" -f 2 | xargs)
           echo "Mensaje enviado desde la app de Android: $mensaje"
 
       - name: Verificar si el mensaje es correcto
         run: |
-          # Verificar si el mensaje coincide con el esperado
           mensaje_esperado="Mensaje de prueba"
           if [ "$mensaje" == "$mensaje_esperado" ]; then
             echo "El mensaje enviado desde la app de Android es correcto: $mensaje"
