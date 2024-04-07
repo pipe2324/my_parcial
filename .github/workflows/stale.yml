@@ -1,29 +1,22 @@
-name: Ejecutar aplicación Android
+name: Enviar mensaje de pantalla a pantalla
 
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
-  ejecutar-aplicacion:
+  enviar-mensaje:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v2
-
-      - name: Conectar dispositivo/emulador Android
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          script: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
-          
-      - name: Ejecutar la aplicación
+      - name: Enviar mensaje
         run: |
-          # Build y ejecución de la aplicación Android
-          ./gradlew installDebug
-          # Mensaje en la consola
-          echo "¡La aplicación se ha ejecutado correctamente en el dispositivo/emulador!"
+          # Simular envío de mensaje de una pantalla a otra
+          mensaje="Hola desde la pantalla 1"
+          echo "Mensaje enviado: $mensaje"
+
+      - name: Mostrar mensaje recibido
+        run: echo "Mensaje recibido en la pantalla 2"
