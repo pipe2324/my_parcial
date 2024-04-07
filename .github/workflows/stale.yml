@@ -3,10 +3,10 @@ name: Verificar mensaje enviado en la app de Android
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   verificar-mensaje:
