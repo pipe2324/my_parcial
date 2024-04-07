@@ -38,3 +38,5 @@ jobs:
             echo "**ERROR:** El mensaje enviado desde la actividad secundaria no es correcto."
             echo "Se esperaba '$mensaje_esperado' pero se recibió '$mensaje'."
             exit 1
+          fi
+          fi
