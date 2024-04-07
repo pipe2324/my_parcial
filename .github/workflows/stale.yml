@@ -22,8 +22,8 @@ jobs:
 
       - name: Extraer el mensaje enviado desde la actividad secundaria
         run: |
-          # Obtener el mensaje directamente del código fuente de MainActivity2.kt
-          mensaje=$(grep -oP 'String mensajeRecibido = intent.getStringExtra\("mensaje"\);.*?mensaje.text = \(.*?\);' app/src/main/java/com/example/my_parcial/MainActivity2.kt | cut -d "=" -f 2 | tr -d "';")
+          # Obtener el mensaje buscando la asignación a cualquier variable
+          mensaje=$(grep -oP 'intent.getStringExtra\("mensaje"\).*? = .*;' app/src/main/java/com/example/my_parcial/MainActivity2.kt | cut -d "=" -f 2 | tr -d "';")
 
           # Validar si el mensaje se encontró
           if [ -z "$mensaje" ]; then
